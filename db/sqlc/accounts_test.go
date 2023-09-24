@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"bank/util"
+	_ "github.com/lib/pq"
 	"github.com/stretchr/testify/require"
 )
 
