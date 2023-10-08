@@ -29,7 +29,7 @@ func TestGetAccount(t *testing.T) {
 				const id int64 = 1
 				store.EXPECT().
 					GetAccount(gomock.Any(), gomock.Eq(id)).
-					Return(randomAccount(id), nil).
+					Return(randomAccount(), nil).
 					Times(1)
 			},
 			expectStatus: http.StatusOK,
@@ -92,9 +92,9 @@ func TestGetAccount(t *testing.T) {
 	}
 }
 
-func randomAccount(id int64) db.Account {
+func randomAccount() db.Account {
 	return db.Account{
-		ID:        id,
+		ID:        util.RandomInt(1, 1000),
 		Owner:     util.RandomOwner(),
 		Balance:   util.RandomMoney(),
 		Currency:  util.RandomCurrency(),
