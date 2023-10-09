@@ -4,9 +4,12 @@ import (
 	"bytes"
 	"database/sql"
 	"encoding/json"
+	"fmt"
+	"github.com/lib/pq"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 
 	mockdb "bank/db/mock"
@@ -16,6 +19,34 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 )
+
+type eqCreateUserParamsMatcher struct {
+	arg      db.CreateUserParams
+	password string
+}
+
+func (e eqCreateUserParamsMatcher) Matches(x interface{}) bool {
+	argIntoMockDB, ok := x.(db.CreateUserParams)
+	if !ok {
+		return false
+	}
+
+	err := util.CheckPassword(e.password, argIntoMockDB.HashedPassword)
+	if err != nil {
+		return false
+	}
+
+	e.arg.HashedPassword = argIntoMockDB.HashedPassword
+	return reflect.DeepEqual(e.arg, argIntoMockDB)
+}
+
+func (e eqCreateUserParamsMatcher) String() string {
+	return fmt.Sprintf("matches arg %v and password %v", e.arg, e.password)
+}
+
+func EqCreateUserParams(arg db.CreateUserParams, password string) gomock.Matcher {
+	return eqCreateUserParamsMatcher{arg, password}
+}
 
 func TestCreateUserAPI(t *testing.T) {
 	user, password := randomUser(t)
@@ -35,8 +66,13 @@ func TestCreateUserAPI(t *testing.T) {
 				"email":     user.Email,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
+				arg := db.CreateUserParams{
+					Username: user.Username,
+					FullName: user.FullName,
+					Email:    user.Email,
+				}
 				store.EXPECT().
-					CreateUser(gomock.Any(), gomock.Any()).
+					CreateUser(gomock.Any(), EqCreateUserParams(arg, password)).
 					Times(1).
 					Return(user, nil)
 			},
@@ -61,6 +97,24 @@ func TestCreateUserAPI(t *testing.T) {
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusInternalServerError, recorder.Code)
+			},
+		},
+		{
+			name: "DuplicateUsername",
+			body: gin.H{
+				"username":  user.Username,
+				"password":  password,
+				"full_name": user.FullName,
+				"email":     user.Email,
+			},
+			buildStubs: func(store *mockdb.MockStore) {
+				store.EXPECT().
+					CreateUser(gomock.Any(), gomock.Any()).
+					Times(1).
+					Return(db.User{}, &pq.Error{Code: "23505"})
+			},
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusForbidden, recorder.Code)
 			},
 		},
 		{
