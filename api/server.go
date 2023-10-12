@@ -1,10 +1,10 @@
 package api
 
 import (
-	db "bank/db/sqlc"
-	"bank/token"
-	"bank/util"
 	"fmt"
+	db "github.com/TerenceCui/go_bank/db/sqlc"
+	"github.com/TerenceCui/go_bank/token"
+	"github.com/TerenceCui/go_bank/util"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"

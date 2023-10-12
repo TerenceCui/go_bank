@@ -1,8 +1,8 @@
 package api
 
 import (
-	db "bank/db/sqlc"
-	"bank/util"
+	db "github.com/TerenceCui/go_bank/db/sqlc"
+	"github.com/TerenceCui/go_bank/util"
 	"github.com/stretchr/testify/require"
 	"os"
 	"testing"

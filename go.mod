@@ -1,4 +1,4 @@
-module bank
+module github.com/TerenceCui/go_bank
 
 go 1.20
 

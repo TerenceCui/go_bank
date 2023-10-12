@@ -1,8 +1,8 @@
 package db
 
 import (
-	"bank/util"
 	"database/sql"
+	"github.com/TerenceCui/go_bank/util"
 	"log"
 	"os"
 	"testing"

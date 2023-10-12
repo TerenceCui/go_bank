@@ -12,9 +12,9 @@ import (
 	"reflect"
 	"testing"
 
-	mockdb "bank/db/mock"
-	db "bank/db/sqlc"
-	"bank/util"
+	mockdb "github.com/TerenceCui/go_bank/db/mock"
+	db "github.com/TerenceCui/go_bank/db/sqlc"
+	"github.com/TerenceCui/go_bank/util"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
