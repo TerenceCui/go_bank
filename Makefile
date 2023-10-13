@@ -1,4 +1,4 @@
-DB_URL=postgresql://root:9G1VipKc0H38CCE1IRqk@go-bank.c967qpaovd69.us-west-2.rds.amazonaws.com:5432/simple_bank
+DB_URL=postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable
 
 postgres:
 	docker run --name postgres -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:12-alpine
